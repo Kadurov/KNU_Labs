@@ -1,0 +1,77 @@
+#include <stdio.h>
+#include <iostream>
+#include <cmath>
+#include <algorithm>
+#include <string>
+#include <vector>
+#include <set>
+
+#define X first
+#define Y second
+#define eps 0.000000001
+
+using namespace std;
+
+void ReadInput(vector< pair<int, int> > &line, int &n, pair<int, int> &main_point) {
+    cin >> n;
+    line = vector< pair<int, int> >(n);
+    
+    for(int i = 0; i < n; i++)
+        cin >> line[i].X >> line[i].Y;
+    
+    cin >> main_point.X >> main_point.Y;
+}
+
+bool IfOnSegment(pair<int, int> point, pair<int, int> left, pair<int, int> right) {
+    return ( (point.X - left.X) * (right.Y - left.Y) - (point.Y - left.Y) * (right.X - left.X) ) == 0;
+}
+
+double FindAngle(pair<int, int> a, pair<int, int> b, pair<int, int> c) {
+    double x1 = a.X - b.X, x2 = c.X - b.X;
+    double y1 = a.Y - b.Y, y2 = c.Y - b.Y;
+    double d1 = sqrt(x1 * x1 + y1 * y1);
+    double d2 = sqrt(x2 * x2 + y2 * y2);
+    return ((x1 * x2 + y1 * y2) / (d1 * d2));
+}
+
+double DistanceFromPointToLine(pair<int, int> point, pair<int, int> left, pair<int, int> right) {
+    if(IfOnSegment(point, left, right)) return 0;
+    if(FindAngle(point, left, right) < 0 || FindAngle(left, right, point) < 0 || FindAngle(right, point, left) < 0) return MAXFLOAT;
+    
+    double A, B, C;
+    
+    A = left.Y - right.Y;
+    B = left.X - right.X;
+    C = left.Y * right.X - right.Y * left.X;
+    
+    return (double) fabs( (A * point.X + B * point.Y + C) / sqrt(A * A + B * B) );
+}
+
+double DistanceBetweenPoints(pair<int, int> p1, pair<int, int> p2) {
+    return (double) (sqrt( fabs((p2.X - p1.X) * (p2.X - p1.X) + (p2.Y - p1.Y) * (p2.Y - p1.Y)) ));
+}
+
+double Solve(vector< pair<int, int> > line, int n, pair<int, int> main_point) {
+    double ans = MAXFLOAT;
+    for(int i = 0; i < line.size(); i++) {
+        if(i + 1 != n)
+            ans = min(ans, DistanceFromPointToLine(main_point, line[i], line[i + 1]));
+        else
+            ans = min(ans, DistanceFromPointToLine(main_point, line[i], line[0]));
+    }
+    for(int i = 0; i < n; i++) {
+        ans = min(ans, DistanceBetweenPoints(main_point, line[i]));
+    }
+    
+    return ans;
+}
+
+int main() {
+    int n;
+    vector< pair<int, int> > line;
+    pair<int, int> main_point;
+    
+    ReadInput(line, n, main_point);
+    
+    cout << Solve(line, n, main_point) << endl;
+}
