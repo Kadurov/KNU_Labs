@@ -1,0 +1,85 @@
+#include <stdio.h>
+#include <iostream>
+#include <cmath>
+#include <algorithm>
+#include <string>
+#include <vector>
+
+using namespace std;
+
+const int inf = 1000000;
+
+struct Point {
+    int x, y;
+};
+
+int a[500][500];
+
+int n;
+
+bool cheak(int X, int Y) {
+    return ((X < n) && (X >= 0)) && ((Y < n) && (Y >= 0));
+}
+
+void make_inf() {
+    for(int i = 0; i < 500; i++)
+        for(int j = 0; j < 500; j++)
+            if(i == j) a[i][j] = 0;
+            else a[i][j] = inf;
+}
+
+int main() {
+    make_inf();
+    
+    
+    vector < pair<int, int> > points_start, points_finish;
+    
+    n = 8;
+    
+    string s1, s2;
+    char l1, l2, n1, n2;
+    
+    cin >> s1 >> s2;
+        l1 = s1[0]; l2 = s2[0];
+        n1 = s1[1]; n2 = s2[1];
+        
+        n1 -= '0';
+        n2 -= '0';
+        
+        n1--; n2--;
+        
+        l1 = tolower(l1);
+        l2 = tolower(l2);
+        
+        l1 -= 'a';
+        l2 -= 'a';
+        points_start.push_back(make_pair(l1, n1));
+        points_finish.push_back(make_pair(l2, n2));
+    
+    for(int i = 0; i < n; i++) {
+        for(int j = 0; j < n; j++) {
+            if(cheak(i + 2, j - 1)) a[i * n + j][(i + 2) * n + (j - 1)] = 1;
+            if(cheak(i + 2, j + 1)) a[i * n + j][(i + 2) * n + (j + 1)] = 1;
+            
+            if(cheak(i - 2, j - 1)) a[i * n + j][(i - 2) * n + (j - 1)] = 1;
+            if(cheak(i - 2, j + 1)) a[i * n + j][(i - 2) * n + (j + 1)] = 1;
+            
+            if(cheak(i - 1, j - 2)) a[i * n + j][(i - 1) * n + (j - 2)] = 1;
+            if(cheak(i + 1, j - 2)) a[i * n + j][(i + 1) * n + (j - 2)] = 1;
+            
+            if(cheak(i - 1, j + 2)) a[i * n + j][(i - 1) * n + (j + 2)] = 1;
+            if(cheak(i + 1, j + 2)) a[i * n + j][(i + 1) * n + (j + 2)] = 1;
+        }
+    }
+    
+    
+    for(int k = 0; k < n * n; k++)
+        for(int i = 0; i < n * n; i++)
+            for(int j = 0; j < n * n; j++)
+                if(a[i][k] < inf && a[k][j] < inf)
+                    a[i][j] = min(a[i][j], a[i][k] + a[k][j]);
+    
+    
+    for(int i = 0; i < points_start.size(); i++)
+        cout << "To get from " << (char)(points_start[i].first+'a') << points_start[i].second + 1 << " to " << (char)(points_finish[i].first + 'a') << points_finish[i].second + 1<< " takes " << a[points_start[i].first * n + points_start[i].second][points_finish[i].first * n + points_finish[i].second] <<" knight moves.\n";
+}
