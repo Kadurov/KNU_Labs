@@ -1,0 +1,72 @@
+#include <stdio.h>
+#include <iostream>
+#include <cmath>
+#include <algorithm>
+#include <string>
+#include <vector>
+#include <set>
+
+#define X first
+#define Y second
+#define eps 0.000000001
+
+using namespace std;
+
+inline double FindSquare(pair<int, int> p1, pair<int, int> p2, pair<int, int> p3) {
+    return fabs( (double)(( ( (p1.X - p3.X) * (p2.Y - p3.Y) ) - ( (p1.Y - p3.Y) * (p2.X - p3.X) ) ) / 2));
+}
+
+double FindSquareWithMainPoint(pair<int, int> main_point, bool use_firts, vector< pair<int, int> > line, int n) {
+    double ans = 0;
+    for(int i = 0; i < line.size(); i++) {
+        if(use_firts && (!i || i + 1 == n)) continue;
+        
+        if(i + 1 != n)
+             ans += FindSquare(main_point, line[i], line[i + 1]);
+        else ans += FindSquare(main_point, line[i], line[0]);
+    }
+    return ans;
+}
+
+void ReadInput(vector< pair<int, int> > &line, int &n, vector< pair<int, int> > &points, int &m) {
+    cin >> n;
+    line = vector< pair<int, int> >(n);
+    
+    for(int i = 0; i < n; i++)
+        cin >> line[i].X >> line[i].Y;
+    
+    cin >> m;
+    points = vector< pair<int, int> >(m);
+    
+    for(int i = 0; i < m; i++)
+        cin >> points[i].X >> points[i].Y;
+}
+
+void FindVertexInPoints(vector< pair<int, int> > line, int n, vector< pair<int, int> > points, int m, vector<bool> &is_vertex) {
+    for(int i = 0; i < points.size(); i++) {
+        if(find(line.begin(), line.end(), points[i]) != line.end())
+            is_vertex[i] = true;
+    }
+}
+
+int main() {
+    int n, m;
+    vector< pair<int, int> > line;
+    vector< pair<int, int> > points;
+    double start_square;
+    
+    ReadInput(line, n, points, m);
+    
+    vector <bool> is_vertex(m);
+    
+    FindVertexInPoints(line, n, points, m, is_vertex);
+    
+    start_square = FindSquareWithMainPoint(line[0], true, line, n);
+    for(int i = 0; i < points.size(); i++) {
+        if(!is_vertex[i]) {
+            if(fabs(FindSquareWithMainPoint(points[i], false, line, n) - start_square) < eps)
+                cout << "Yes\n";
+            else cout << "No\n";
+        } else cout << "Vertex\n";
+    }
+}
