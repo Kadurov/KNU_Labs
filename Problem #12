@@ -1,0 +1,26 @@
+#include <algorithm>
+#include <stack>
+#include <cstdio>
+#include <vector>
+#include <iostream>
+
+#define MAX 1009
+
+using namespace std;
+
+int Solve (int n, int k) {
+    int res = 0;
+    for (int i = 1; i <= n; i++)
+        res = (res + k) % i;
+    return res;
+}
+
+
+int main() {
+    int n, k, pos = 1;
+    cin >> n >> k >> pos; // если подзадача А, то pos = 1
+    
+    int ans = (Solve(n, k) + pos) % n;
+    if(!ans) ans = n;
+    cout << ans << endl;
+}
