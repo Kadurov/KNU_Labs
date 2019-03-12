@@ -1,0 +1,65 @@
+//Solve for O(n^2), if have time I'll solve that for O(n logn)
+
+#include <stdio.h>
+#include <iostream>
+#include <cmath>
+#include <algorithm>
+#include <string>
+#include <vector>
+#include <set>
+
+#define X first
+#define Y second
+#define eps 0.000000001
+#define MAXN 1000000
+
+using namespace std;
+
+void ReadInput(vector<int> &a, int &n) {
+    cin >> n;
+    a = vector<int>(n);
+    
+    for(int i = 0; i < n; i++)
+        cin >> a[i];
+    
+    reverse(a.begin(), a.end());
+}
+
+bool Solve(vector<int> a, int n, long long mask) {
+    if(mask == 1 << (n + 1)) return false;
+    
+    int sum1, sum2;
+    sum1 = sum2 = 0;
+    for(int i = 0; i < n; i++) {
+        if((1 << i) & mask) {
+            sum1 += a[i];
+        } else sum2 += a[i];
+    }
+    
+    
+    if(min(sum1, sum2) * 2 >= max(sum1, sum2)) {
+        for(int i = 0; i < n; i++)
+            if((1 << i) & mask)
+                cout << a[i] << ' ';
+        cout << endl;
+
+        for(int i = 0; i < n; i++)
+            if(!((1 << i) & mask))
+                cout << a[i] << ' ';
+        cout << endl;
+        exit(0);
+        return true;
+    }
+    
+    Solve(a, n, mask + 1);
+    return false;
+}
+
+int main() {
+    int n;
+    vector<int> a;
+    ReadInput(a, n);
+    
+    if(!Solve(a, n, 0)) cout << "No solution\n";
+    
+}
