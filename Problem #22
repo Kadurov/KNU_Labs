@@ -1,0 +1,71 @@
+#include <stdio.h>
+#include <iostream>
+#include <cmath>
+#include <algorithm>
+#include <string>
+#include <vector>
+#include <set>
+
+#define X first
+#define Y second
+#define eps 0.000000001
+#define MAXN 1000000
+#define INF 1e9
+
+using namespace std;
+
+void ReadInput(vector< vector<int> > &a, int &n, int &m) {
+    cin >> n >> m;
+    n++;
+    m++;
+    a = vector< vector<int> >(n, vector<int>(m, 0));
+    
+    for(int i = 1; i < n; i++)
+        for(int j = 1; j < m; j++)
+            cin >> a[i][j];
+}
+
+vector< vector<int> > PrefSum(vector< vector<int> > a, int n, int m) {
+    vector< vector<int> > pref_sum(n, vector<int>(m));
+    
+    pref_sum[1][1] = a[1][1];
+    for(int i = 1; i < n; i++)
+        for(int j = 1; j < m; j++)
+            pref_sum[i][j] = a[i][j] + pref_sum[i - 1][j] + pref_sum[i][j - 1] - pref_sum[i - 1][j - 1];
+    
+    return pref_sum;
+        
+}
+
+void PrintMatrix(vector< vector<int> > a, int n, int m) {
+    for(int i = 1; i < n; i++) {
+        for(int j = 1; j < m; j++)
+            cout << a[i][j] << ' ';
+        cout << endl;
+    }
+}
+
+void FindMaxInMatrix(vector< vector<int> > a, int n, int m) {
+    int ans = -INF;
+    int cur_sum = 0;
+    
+    for(int x1 = 1; x1 < n; x1++)
+        for(int y1 = 1; y1 < m; y1++)
+            for(int x2 = x1; x2 < n; x2++)
+                for(int y2 = y1; y2 < m; y2++) {
+                    cur_sum = a[x2][y2] - a[x1 - 1][y2] - a[x2][y1 - 1] + a[x1 - 1][y1 - 1];
+                    ans = max(ans, cur_sum);
+                }
+    
+    cout << ans << endl;
+}
+
+int main() {
+    int n, m;
+    vector< vector<int> > a;
+    ReadInput(a, n, m);
+    
+    vector< vector<int> > pref_sum = PrefSum(a, n, m);
+    
+    FindMaxInMatrix(pref_sum, n, m);
+}
