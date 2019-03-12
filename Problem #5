@@ -1,0 +1,76 @@
+//Solve for O(n^2), if have time I'll solve that for O(n logn)
+
+#include <stdio.h>
+#include <iostream>
+#include <cmath>
+#include <algorithm>
+#include <string>
+#include <vector>
+#include <set>
+
+#define X first
+#define Y second
+#define eps 0.000000001
+#define MAXN 1000000
+
+using namespace std;
+
+void ReadInput(vector<int> &a, int &n) {
+    cin >> n;
+    a = vector<int>(n);
+    
+    for(int i = 0; i < n; i++)
+        cin >> a[i];
+    
+    reverse(a.begin(), a.end());
+}
+
+void Solve(vector<int> a, int n, vector<int> &dp, vector<int> &p) {
+    for (int i = 0; i < n; i++) {
+        dp[i] = 1;
+        p[i] = -1;
+        for (int j = 0; j < i; j++)
+            if (a[j] % a[i] == 0)
+                if (1 + dp[j] > dp[i]) {
+                    dp[i] = 1 + dp[j];
+                    p[i] = j;
+                }
+    }
+}
+
+pair<vector<int>, int> FindPath(vector<int> dp, int n, vector<int> p) {
+    int ans = dp[0],  pos = 0;
+    for (int i = 0; i < n; i++)
+        if (dp[i] > ans) {
+            ans = dp[i];
+            pos = i;
+        }
+    
+    
+    vector<int> path;
+    while (pos != -1) {
+        path.push_back (pos);
+        pos = p[pos];
+    }
+    
+    return make_pair(path, ans);
+}
+
+
+int main() {
+    int n;
+    vector<int> a;
+    ReadInput(a, n);
+    
+    vector<int> dp(2 * n), p(2 * n);
+    
+    Solve(a, n, dp, p);
+    
+    pair<vector<int>, int> ans = FindPath(dp, n, p);
+    
+    cout << ans.Y << endl;
+
+    for (size_t i = 0; i < ans.X.size(); i++)
+        cout << a[ans.X[i]] << ' ';
+    cout << endl;
+}
